@@ -1,11 +1,3 @@
-"""
- * author: AK
- * created on 09-03-2025-17h-57m
- * github: https://github.com/TRC-Loop
- * email: ak@stellar-code.com
- * copyright 2025
-"""
-
 # This is intended for pygame-ce (PyGame Community Edition)
 # It may NOT WORK or might be slower, when using normal PyGame.
 # https://github.com/pygame-community/pygame-ce
@@ -31,7 +23,7 @@ manager = pygame_gui.UIManager((WIDTH, HEIGHT))
 FPS = 30
 
 radio_tools = pygame_gui.elements.UISelectionList(
-    relative_rect=pg.Rect((100, 100), (120, 80)),
+    relative_rect=pg.Rect((0, 0), (100, 46)),
     item_list=["Vacuum", "Obstacle"],
     manager=manager
 )
@@ -44,6 +36,7 @@ class App:
         self.clock = clock
         self.grid_size = grid_size
         self.block_size = block_size
+        self.current_draw_tool = -1
 
     def process_events(self):
         for event in pg.event.get():
@@ -51,7 +44,15 @@ class App:
                 self.running = False
             
             if event.type == pygame_gui.UI_SELECTION_LIST_NEW_SELECTION:
-                print("Selected:", event.text)
+                match event.text.lower():
+                    case "vacuum":
+                        self.current_draw_tool = 2
+                        
+                    case "obstacle":
+                        self.current_draw_tool = 1
+                        
+                    case _:
+                        self.current_draw_tool = -1
                 
             manager.process_events(event)
 
@@ -73,7 +74,7 @@ class App:
         fps = clock.get_fps()
         fps = round(fps)
 
-        screen.blit(render_text(f"FPS: {str(fps)} | Grid Size: {str(self.grid_size)} | Block Size: {str(self.block_size)}", 22), (5, HEIGHT - 24))
+        screen.blit(render_text(f"FPS: {str(fps)} | Grid Size: {str(self.grid_size)} | Block Size: {str(self.block_size)} | Tool: {self.current_draw_tool}", 22), (5, HEIGHT - 24))
 
     def process_rendering(self):
         screen.fill(BACKGROUND)
